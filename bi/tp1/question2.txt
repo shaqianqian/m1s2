@@ -1,0 +1,447 @@
+1. Le nombre de leçons par niveau ainsi que le nombre total de leçons suivies ;
+(1)select distinct count(L_id) from passe_test group by N_ID 
+
+                            COUNT(L_ID)
+---------------------------------------
+                                    168
+                                     25
+                                     44
+                                     70
+                                    143
+                                    117
+                                    102
+                                     68
+                                     85
+                                     80
+                                    107
+
+ 11 lignes sélectionnées 
+
+  (2)select distinct count(L_id) from passe_test 
+
+                            COUNT(L_ID)
+---------------------------------------
+                                   1089
+
+2. Le centre qui a dispensé́ le plus de leçons, par discipline sportive.
+
+select max(count(p.l_id)) from centre c join passe_test p on c.C_ID=p.C_ID group by p.c_id,p.D_ID
+
+                     MAX(COUNT(P.L_ID))
+---------------------------------------
+                                    177
+
+
+
+3. le nombre de leçons et le taux de succès par discipline sportive et par massif montagneux, par discipline seule, par massif montagneux seul, et au total ;  
+
+(1)par total
+
+select sum(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) from passe_test p
+---------------------------------------
+                          COUNT(P.L_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/
+--------------------------------------- ---------------------------------------
+                                   1089                              0.644628099
+    
+(2)par discipline 
+
+select p.D_ID,count(p.L_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) from passe_test p group by p.D_ID
+
+      D_ID                           COUNT(P.L_ID)
+---------- ---------------------------------------
+SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/
+---------------------------------------
+         1                    0.688927944       569 
+                             
+
+         2                    0.605042017        238 
+                            
+
+         3                    0.588652482        282 
+                             
+   
+
+(3)par discipline seule 
+
+select p.D_ID,count(p.L_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) from passe_test p where p.d_id=1 group by p.D_ID 
+
+
+      D_ID COUNT(P.L_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+---------- ------------- ------------------------------------------------------------------
+         1           569                                                         .0.688927944
+
+
+   
+(4)par massif montagneux seule
+
+select p.D_ID,count(p.L_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0)  from passe_test p where p.d_id=1 or p.d_id=3 group by p.D_ID
+
+      D_ID COUNT(P.L_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+---------- ------------- ------------------------------------------------------------------
+         1           569                                                         .688927944
+         3           282                                                         .588652482
+
+(5)par massif montagneux 
+
+select count(p.L_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0)  from passe_test p where p.d_id=1 or p.d_id=3 
+
+
+COUNT(P.L_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+------------- ------------------------------------------------------------------
+          851                                                         0.655699177
+
+
+4. le temps moyen, minimal et maximal entre la première et la dernière leçon des candidats qui ont réussi un test de niveau ; 
+
+(1)max
+select p.e_id,max(l.l_duree) from lecon l inner join passe_test p on l.l_id=p.l_id  where p.t_resultat=1 group by p.e_id
+
+
+      E_ID MAX(L.L_DUREE)
+---------- --------------
+        30            120
+        43            120
+        25            120
+        34            120
+        22            120
+        44            120
+        47            120
+        28             90
+        29             90
+        13            120
+        11            120
+
+      E_ID MAX(L.L_DUREE)
+---------- --------------
+        14            120
+        20            120
+        21            120
+        26             90
+        31            120
+        46             90
+        24            120
+        32            120
+        38            120
+        23             90
+        37            120
+
+      E_ID MAX(L.L_DUREE)
+---------- --------------
+        35            120
+        17             90
+        41            120
+        40            120
+        33            120
+        45            120
+        36            120
+        49             60
+        18            120
+        27            120
+        39            120
+
+      E_ID MAX(L.L_DUREE)
+---------- --------------
+        16             60
+        19            120
+        15            120
+        10             90
+        12            120
+
+38 rows selected. 
+
+(2)moyen
+select p.e_id,avg(l.l_duree) from lecon l inner join passe_test p on l.l_id=p.l_id  where p.t_resultat=1 group by p.e_id
+
+
+      E_ID AVG(L.L_DUREE)
+---------- --------------
+        30     85.7142857
+        43            120
+        25             85
+        34             90
+        22           92.5
+        44     87.2727273
+        47     92.7272727
+        28     76.3636364
+        29     72.8571429
+        13     103.333333
+        11     73.3333333
+
+      E_ID AVG(L.L_DUREE)
+---------- --------------
+        14             90
+        20          112.5
+        21            105
+        26     72.8571429
+        31     101.538462
+        46             90
+        24     99.2307692
+        32             95
+        38         101.25
+        23             69
+        37            114
+
+      E_ID AVG(L.L_DUREE)
+---------- --------------
+        35          93.75
+        17             78
+        41             90
+        40     111.428571
+        33     102.857143
+        45     73.3333333
+        36     93.3333333
+        49             60
+        18     96.6666667
+        27     93.3333333
+        39          93.75
+
+      E_ID AVG(L.L_DUREE)
+---------- --------------
+        16             60
+        19          102.5
+        15     111.428571
+        10     72.8571429
+        12     109.090909
+
+38 rows selected. 
+(3)min
+select p.e_id,min(l.l_duree) from lecon l inner join passe_test p on l.l_id=p.l_id  where p.t_resultat=1 group by p.e_id
+
+
+      E_ID MIN(L.L_DUREE)
+---------- --------------
+        30             60
+        43            120
+        25             60
+        34             60
+        22             60
+        44             60
+        47             60
+        28             60
+        29             60
+        13             90
+        11             60
+
+      E_ID MIN(L.L_DUREE)
+---------- --------------
+        14             60
+        20             90
+        21             90
+        26             60
+        31             90
+        46             90
+        24             90
+        32             60
+        38             90
+        23             60
+        37             90
+
+      E_ID MIN(L.L_DUREE)
+---------- --------------
+        35             60
+        17             60
+        41             60
+        40             90
+        33             60
+        45             60
+        36             60
+        49             60
+        18             90
+        27             60
+        39             60
+
+      E_ID MIN(L.L_DUREE)
+---------- --------------
+        16             60
+        19             90
+        15             90
+        10             60
+        12             90
+
+38 rows selected. 
+
+5. le nombre de candidats différents, le nombre de tests passés et le taux de succès par sexe d'une part, par tranche d'âge d'autre part ;
+
+(1)par sexe
+
+select e.E_SEXE,count(p.e_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) from passe_test p inner join eleve e on
+e.E_ID=p.E_ID where p.d_id=1 group by e.E_SEXE
+
+
+E COUNT(P.E_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+- ------------- ------------------------------------------------------------------
+M           356                                                         0.719101124
+F           213                                                         0.638497653
+
+(2)par tranche
+
+select e.tranche,count(p.e_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) from passe_test p inner join eleve e on
+e.E_ID=p.E_ID where p.d_id=1 group by e.tranche
+
+
+
+TRANCHE
+
+COUNT(P.E_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+------------- ------------------------------------------------------------------
+20-29                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           77                                                         .857142857
+
+40-49                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           20                                                                 .5
+
+50-59                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           12                                                                  1
+
+
+COUNT(P.E_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+------------- ------------------------------------------------------------------
+10-19                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+          238                                                         .596638655
+
+>60                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+            9                                                                  0
+
+30-39                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           12                                                                 .5
+
+COUNT(P.E_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+------------- ------------------------------------------------------------------
+<10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+            7                                                                  1
+
+40-49                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           24                                                                  1
+
+20-29                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           86                                                         .476744186
+
+
+COUNT(P.E_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+------------- ------------------------------------------------------------------
+30-39                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           60                                                                  1
+
+10-19                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+           24                                                                  1
+
+
+11 rows selected. 
+
+6. Pour chaque centre, les nationalités avec leur rang d'importance en termes de durée cumulée des leçons. Aura le rang 1 la nationalité dont les élèves ont cumulé le plus d'heures de leçon dans ce centre ;
+
+select c.c_id,c.c_nom,e.e_nationalite ,max(l.l_duree) from eleve e  inner join passe_test p on
+e.E_ID=p.E_ID inner join lecon l on
+p.l_ID=l.l_ID inner join centre c on c.C_ID=p.c_id
+group by e.e_nationalite，c.c_id,c.c_nom ORDER BY max(l.l_duree) DESC 
+
+
+      C_ID C_NOM                                                                                                E_NATIONALITE        MAX(L.L_DUREE)
+---------- ---------------------------------------------------------------------------------------------------- -------------------- --------------
+         4 La Clusaz                                                                                            belge                           120
+         8 Le Lioran                                                                                            etats-unienne                   120
+         8 Le Lioran                                                                                            japonnaise                      120
+         1 Bussang Larcenaire                                                                                   etats-unienne                   120
+         1 Bussang Larcenaire                                                                                   française                       120
+         5 La Plagne                                                                                            etats-unienne                   120
+         7 Les Angles                                                                                           française                       120
+         7 Les Angles                                                                                           marocaine                       120
+         6 Grand Tourmalet                                                                                      etats-unienne                   120
+         8 Le Lioran                                                                                            suisse                          120
+         7 Les Angles                                                                                           italienne                       120
+
+      C_ID C_NOM                                                                                                E_NATIONALITE        MAX(L.L_DUREE)
+---------- ---------------------------------------------------------------------------------------------------- -------------------- --------------
+         5 La Plagne                                                                                            belge                           120
+         3 Brides les bains                                                                                     italienne                       120
+         3 Brides les bains                                                                                     japonnaise                      120
+         8 Le Lioran                                                                                            belge                           120
+         8 Le Lioran                                                                                            française                       120
+         6 Grand Tourmalet                                                                                      belge                           120
+         6 Grand Tourmalet                                                                                      française                       120
+         2 La Bresse Hohneck                                                                                    italienne                       120
+         1 Bussang Larcenaire                                                                                   marocaine                       120
+         7 Les Angles                                                                                           etats-unienne                   120
+         8 Le Lioran                                                                                            italienne                       120
+
+      C_ID C_NOM                                                                                                E_NATIONALITE        MAX(L.L_DUREE)
+---------- ---------------------------------------------------------------------------------------------------- -------------------- --------------
+         2 La Bresse Hohneck                                                                                    belge                           120
+         7 Les Angles                                                                                           suisse                          120
+         2 La Bresse Hohneck                                                                                    française                       120
+         3 Brides les bains                                                                                     française                       120
+         2 La Bresse Hohneck                                                                                    etats-unienne                   120
+         3 Brides les bains                                                                                     marocaine                       120
+         3 Brides les bains                                                                                     etats-unienne                   120
+         7 Les Angles                                                                                           belge                           120
+         7 Les Angles                                                                                           japonnaise                      120
+         1 Bussang Larcenaire                                                                                   espagnole                        90
+         3 Brides les bains                                                                                     ukrainienne                      90
+
+      C_ID C_NOM                                                                                                E_NATIONALITE        MAX(L.L_DUREE)
+---------- ---------------------------------------------------------------------------------------------------- -------------------- --------------
+         7 Les Angles                                                                                           argentine                        90
+         5 La Plagne                                                                                            française                        90
+         7 Les Angles                                                                                           espagnole                        90
+         6 Grand Tourmalet                                                                                      algérienne                       90
+         6 Grand Tourmalet                                                                                      espagnole                        90
+         4 La Clusaz                                                                                            française                        90
+         3 Brides les bains                                                                                     algérienne                       90
+         8 Le Lioran                                                                                            algérienne                       90
+         3 Brides les bains                                                                                     argentine                        90
+         7 Les Angles                                                                                           ukrainienne                      90
+         6 Grand Tourmalet                                                                                      argentine                        90
+
+      C_ID C_NOM                                                                                                E_NATIONALITE        MAX(L.L_DUREE)
+---------- ---------------------------------------------------------------------------------------------------- -------------------- --------------
+         2 La Bresse Hohneck                                                                                    algérienne                       60
+
+45 rows selected. 
+7. Le nombre de leçons et le taux de succès par mois, en divisant ces mois selon les intervalles définis par les quartiles (25% meilleurs en termes de nombre de leçons, 25% suivants, etc).
+select to_char(t.t_date_passage,'mm') ,count(t.L_ID),sum
+(case when t_resultat=1 then 1 else 0 end)/nullif(count(t_resultat),0) 
+from passe_test t group by to_char(t.t_date_passage,'mm')
+
+
+TO COUNT(T.L_ID) SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/NULLIF(COUNT(T_RESULTAT),0)
+-- ------------- ------------------------------------------------------------------
+04            91                                                          .67032967
+11           127                                                         .496062992
+01           217                                                         .612903226
+12           131                                                         .854961832
+10           237                                                         .594936709
+02           160                                                             .80625
+03           126                                                                 .5
+
+7 rows selected. 
+
+select to_char(t.t_date_passage,'mm') ,count(t.L_ID),
+case when sum(case when t_resultat=1 then 1 else 0 end)/count(t_resultat)  BETWEEN 0 AND 0.25  then '<25%'
+when sum(case when t_resultat=1 then 1 else 0 end)/count(t_resultat)  BETWEEN 0.25 AND 0.5  then '25%-50%'
+when sum(case when t_resultat=1 then 1 else 0 end)/count(t_resultat)  BETWEEN 0.5 AND 0.75  then '50%-75%'
+when sum(case when t_resultat=1 then 1 else 0 end)/count(t_resultat)  BETWEEN 0.75 AND 1  then '75%-100%'
+            end ,
+sum(case when t_resultat=1 then 1 else 0 end)/count(t_resultat) 
+from passe_test t group by to_char(t.t_date_passage,'mm') order by sum
+(case when t_resultat=1 then 1 else 0 end)/count(t_resultat) desc
+
+TO COUNT(T.L_ID) CASEWHEN SUM(CASEWHENT_RESULTAT=1THEN1ELSE0END)/COUNT(T_RESULTAT)
+-- ------------- -------- --------------------------------------------------------
+12           131 75%-100%                                               .854961832
+02           160 75%-100%                                                   .80625
+04            91 50%-75%                                                 .67032967
+01           217 50%-75%                                                .612903226
+10           237 50%-75%                                                .594936709
+03           126 25%-50%                                                        .5
+11           127 25%-50%                                                .496062992
+
+7 rows selected. 
+
+
+
